@@ -1,8 +1,6 @@
-
-
 import time
 import numpy as np
-import pandas as pd
+import pandas as pd 
 import streamlit as st
 from streamlit_option_menu import option_menu
 from streamlit_extras.add_vertical_space import add_vertical_space
@@ -48,6 +46,24 @@ def streamlit_config():
     st.markdown(page_background_color, unsafe_allow_html=True)
     st.markdown(f'<h1 style="text-align: center;">Talent Track By AI</h1>', unsafe_allow_html=True)
 
+def process_resume(pdf):
+    if pdf is not None:
+        try:
+            with st.spinner('Processing...'):
+                pdf_chunks = resume_analyzer.pdf_to_chunks(pdf)
+                summary_prompt = resume_analyzer.summary_prompt(query_with_chunks=pdf_chunks)
+                summary = resume_analyzer.openai(chunks=pdf_chunks, analyze=summary_prompt)
+                if summary:
+                    st.session_state['resume_data'] = {
+                        'pdf': pdf,
+                        'chunks': pdf_chunks,
+                        'summary': summary
+                    }
+                    return True
+        except Exception as e:
+            st.markdown(f'<h5 style="text-align: center;color: orange;">{e}</h5>', unsafe_allow_html=True)
+    return False
+
 class resume_analyzer:
     def pdf_to_chunks(pdf):
         pdf_reader = PdfReader(pdf)
@@ -86,26 +102,26 @@ class resume_analyzer:
     def resume_summary():
         with st.form(key='Summary'):
             add_vertical_space(1)
-            pdf = st.file_uploader(label='Upload Your Resume', type='pdf')
-            add_vertical_space(2)
-            submit = st.form_submit_button(label='Submit')
-            add_vertical_space(1)
+            if 'resume_data' not in st.session_state:
+                pdf = st.file_uploader(label='Upload Your Resume', type='pdf')
+                add_vertical_space(2)
+                submit = st.form_submit_button(label='Submit')
+                add_vertical_space(1)
+            else:
+                st.info("Using previously uploaded resume")
+                submit = st.form_submit_button(label='Analyze Again')
+                add_vertical_space(1)
         
         add_vertical_space(3)
         if submit:
-            if pdf is not None:
-                try:
-                    with st.spinner('Processing...'):
-                        pdf_chunks = resume_analyzer.pdf_to_chunks(pdf)
-                        summary_prompt = resume_analyzer.summary_prompt(query_with_chunks=pdf_chunks)
-                        summary = resume_analyzer.openai(chunks=pdf_chunks, analyze=summary_prompt)
-                        if summary:
-                            st.markdown(f'<h4 style="color: orange;">Summary:</h4>', unsafe_allow_html=True)
-                            st.write(summary)
-                except Exception as e:
-                    st.markdown(f'<h5 style="text-align: center;color: orange;">{e}</h5>', unsafe_allow_html=True)
-            elif pdf is None:
-                st.markdown(f'<h5 style="text-align: center;color: orange;">Please Upload Your Resume</h5>', unsafe_allow_html=True)
+            if 'resume_data' not in st.session_state:
+                if pdf is not None:
+                    if process_resume(pdf):
+                        st.markdown(f'<h4 style="color: orange;">Summary:</h4>', unsafe_allow_html=True)
+                        st.write(st.session_state['resume_data']['summary'])
+            else:
+                st.markdown(f'<h4 style="color: orange;">Summary:</h4>', unsafe_allow_html=True)
+                st.write(st.session_state['resume_data']['summary'])
 
     def strength_prompt(query_with_chunks):
         query = f'''need to detailed analysis and explain of the strength of below resume and finally conclude them
@@ -118,29 +134,32 @@ class resume_analyzer:
     def resume_strength():
         with st.form(key='Strength'):
             add_vertical_space(1)
-            pdf = st.file_uploader(label='Upload Your Resume', type='pdf')
-            add_vertical_space(2)
-            submit = st.form_submit_button(label='Submit')
-            add_vertical_space(1)
+            if 'resume_data' not in st.session_state:
+                pdf = st.file_uploader(label='Upload Your Resume', type='pdf')
+                add_vertical_space(2)
+                submit = st.form_submit_button(label='Submit')
+                add_vertical_space(1)
+            else:
+                st.info("Using previously uploaded resume")
+                submit = st.form_submit_button(label='Analyze Again')
+                add_vertical_space(1)
 
         add_vertical_space(3)
         if submit:
-            if pdf is not None:
-                try:
-                    with st.spinner('Processing...'):
-                        pdf_chunks = resume_analyzer.pdf_to_chunks(pdf)
-                        summary_prompt = resume_analyzer.summary_prompt(query_with_chunks=pdf_chunks)
-                        summary = resume_analyzer.openai(chunks=pdf_chunks, analyze=summary_prompt)
-                        if summary:
-                            strength_prompt = resume_analyzer.strength_prompt(query_with_chunks=summary)
-                            strength = resume_analyzer.openai(chunks=pdf_chunks, analyze=strength_prompt)
-                            if strength:
-                                st.markdown(f'<h4 style="color: orange;">Strength:</h4>', unsafe_allow_html=True)
-                                st.write(strength)
-                except Exception as e:
-                    st.markdown(f'<h5 style="text-align: center;color: orange;">{e}</h5>', unsafe_allow_html=True)
-            elif pdf is None:
-                st.markdown(f'<h5 style="text-align: center;color: orange;">Please Upload Your Resume</h5>', unsafe_allow_html=True)
+            if 'resume_data' not in st.session_state:
+                if pdf is not None:
+                    if process_resume(pdf):
+                        strength_prompt = resume_analyzer.strength_prompt(query_with_chunks=st.session_state['resume_data']['summary'])
+                        strength = resume_analyzer.openai(chunks=st.session_state['resume_data']['chunks'], analyze=strength_prompt)
+                        if strength:
+                            st.markdown(f'<h4 style="color: orange;">Strength:</h4>', unsafe_allow_html=True)
+                            st.write(strength)
+            else:
+                strength_prompt = resume_analyzer.strength_prompt(query_with_chunks=st.session_state['resume_data']['summary'])
+                strength = resume_analyzer.openai(chunks=st.session_state['resume_data']['chunks'], analyze=strength_prompt)
+                if strength:
+                    st.markdown(f'<h4 style="color: orange;">Strength:</h4>', unsafe_allow_html=True)
+                    st.write(strength)
 
     def weakness_prompt(query_with_chunks):
         query = f'''need to detailed analysis and explain of the weakness of below resume and how to improve make a better resume.
@@ -152,29 +171,32 @@ class resume_analyzer:
     def resume_weakness():
         with st.form(key='Weakness'):
             add_vertical_space(1)
-            pdf = st.file_uploader(label='Upload Your Resume', type='pdf')
-            add_vertical_space(2)
-            submit = st.form_submit_button(label='Submit')
-            add_vertical_space(1)
+            if 'resume_data' not in st.session_state:
+                pdf = st.file_uploader(label='Upload Your Resume', type='pdf')
+                add_vertical_space(2)
+                submit = st.form_submit_button(label='Submit')
+                add_vertical_space(1)
+            else:
+                st.info("Using previously uploaded resume")
+                submit = st.form_submit_button(label='Analyze Again')
+                add_vertical_space(1)
         
         add_vertical_space(3)
         if submit:
-            if pdf is not None:
-                try:
-                    with st.spinner('Processing...'):
-                        pdf_chunks = resume_analyzer.pdf_to_chunks(pdf)
-                        summary_prompt = resume_analyzer.summary_prompt(query_with_chunks=pdf_chunks)
-                        summary = resume_analyzer.openai(chunks=pdf_chunks, analyze=summary_prompt)
-                        if summary:
-                            weakness_prompt = resume_analyzer.weakness_prompt(query_with_chunks=summary)
-                            weakness = resume_analyzer.openai(chunks=pdf_chunks, analyze=weakness_prompt)
-                            if weakness:
-                                st.markdown(f'<h4 style="color: orange;">Weakness and Suggestions:</h4>', unsafe_allow_html=True)
-                                st.write(weakness)
-                except Exception as e:
-                    st.markdown(f'<h5 style="text-align: center;color: orange;">{e}</h5>', unsafe_allow_html=True)
-            elif pdf is None:
-                st.markdown(f'<h5 style="text-align: center;color: orange;">Please Upload Your Resume</h5>', unsafe_allow_html=True)
+            if 'resume_data' not in st.session_state:
+                if pdf is not None:
+                    if process_resume(pdf):
+                        weakness_prompt = resume_analyzer.weakness_prompt(query_with_chunks=st.session_state['resume_data']['summary'])
+                        weakness = resume_analyzer.openai(chunks=st.session_state['resume_data']['chunks'], analyze=weakness_prompt)
+                        if weakness:
+                            st.markdown(f'<h4 style="color: orange;">Weakness and Suggestions:</h4>', unsafe_allow_html=True)
+                            st.write(weakness)
+            else:
+                weakness_prompt = resume_analyzer.weakness_prompt(query_with_chunks=st.session_state['resume_data']['summary'])
+                weakness = resume_analyzer.openai(chunks=st.session_state['resume_data']['chunks'], analyze=weakness_prompt)
+                if weakness:
+                    st.markdown(f'<h4 style="color: orange;">Weakness and Suggestions:</h4>', unsafe_allow_html=True)
+                    st.write(weakness)
 
     def job_title_prompt(query_with_chunks):
         query = f''' what are the job roles i apply to likedin based on below?
@@ -187,29 +209,32 @@ class resume_analyzer:
     def job_title_suggestion():
         with st.form(key='Job Titles'):
             add_vertical_space(1)
-            pdf = st.file_uploader(label='Upload Your Resume', type='pdf')
-            add_vertical_space(2)
-            submit = st.form_submit_button(label='Submit')
-            add_vertical_space(1)
+            if 'resume_data' not in st.session_state:
+                pdf = st.file_uploader(label='Upload Your Resume', type='pdf')
+                add_vertical_space(2)
+                submit = st.form_submit_button(label='Submit')
+                add_vertical_space(1)
+            else:
+                st.info("Using previously uploaded resume")
+                submit = st.form_submit_button(label='Analyze Again')
+                add_vertical_space(1)
 
         add_vertical_space(3)
         if submit:
-            if pdf is not None:
-                try:
-                    with st.spinner('Processing...'):
-                        pdf_chunks = resume_analyzer.pdf_to_chunks(pdf)
-                        summary_prompt = resume_analyzer.summary_prompt(query_with_chunks=pdf_chunks)
-                        summary = resume_analyzer.openai(chunks=pdf_chunks, analyze=summary_prompt)
-                        if summary:
-                            job_title_prompt = resume_analyzer.job_title_prompt(query_with_chunks=summary)
-                            job_title = resume_analyzer.openai(chunks=pdf_chunks, analyze=job_title_prompt)
-                            if job_title:
-                                st.markdown(f'<h4 style="color: orange;">Job Titles:</h4>', unsafe_allow_html=True)
-                                st.write(job_title)
-                except Exception as e:
-                    st.markdown(f'<h5 style="text-align: center;color: orange;">{e}</h5>', unsafe_allow_html=True)
-            elif pdf is None:
-                st.markdown(f'<h5 style="text-align: center;color: orange;">Please Upload Your Resume</h5>', unsafe_allow_html=True)
+            if 'resume_data' not in st.session_state:
+                if pdf is not None:
+                    if process_resume(pdf):
+                        job_title_prompt = resume_analyzer.job_title_prompt(query_with_chunks=st.session_state['resume_data']['summary'])
+                        job_title = resume_analyzer.openai(chunks=st.session_state['resume_data']['chunks'], analyze=job_title_prompt)
+                        if job_title:
+                            st.markdown(f'<h4 style="color: orange;">Job Titles:</h4>', unsafe_allow_html=True)
+                            st.write(job_title)
+            else:
+                job_title_prompt = resume_analyzer.job_title_prompt(query_with_chunks=st.session_state['resume_data']['summary'])
+                job_title = resume_analyzer.openai(chunks=st.session_state['resume_data']['chunks'], analyze=job_title_prompt)
+                if job_title:
+                    st.markdown(f'<h4 style="color: orange;">Job Titles:</h4>', unsafe_allow_html=True)
+                    st.write(job_title)
 
 class linkedin_scraper:
     def webdriver_setup():
