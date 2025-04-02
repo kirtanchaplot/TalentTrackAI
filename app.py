@@ -117,13 +117,13 @@ class resume_analyzer:
             llm = initialize_llm()
             if not llm:
                 st.error("Failed to initialize LLM")
-                return None
+            return None
             
             # Create and run the chain
             st.info("Running analysis...")
-            chain = load_qa_chain(llm=llm, chain_type='stuff')
-            response = chain.run(input_documents=docs, question=analyze)
-            return response
+        chain = load_qa_chain(llm=llm, chain_type='stuff')
+        response = chain.run(input_documents=docs, question=analyze)
+        return response
         except Exception as e:
             st.error(f"Error in LLM processing: {str(e)}")
             return None
@@ -140,10 +140,10 @@ class resume_analyzer:
         with st.form(key='Summary'):
             add_vertical_space(1)
             if 'resume_data' not in st.session_state:
-                pdf = st.file_uploader(label='Upload Your Resume', type='pdf')
-                add_vertical_space(2)
-                submit = st.form_submit_button(label='Submit')
-                add_vertical_space(1)
+            pdf = st.file_uploader(label='Upload Your Resume', type='pdf')
+            add_vertical_space(2)
+            submit = st.form_submit_button(label='Submit')
+            add_vertical_space(1)
             else:
                 st.info("Using previously uploaded resume")
                 submit = st.form_submit_button(label='Analyze Again')
@@ -152,12 +152,12 @@ class resume_analyzer:
         add_vertical_space(3)
         if submit:
             if 'resume_data' not in st.session_state:
-                if pdf is not None:
+            if pdf is not None:
                     if process_resume(pdf):
                         st.markdown(f'<h4 style="color: orange;">Summary:</h4>', unsafe_allow_html=True)
                         st.write(st.session_state['resume_data']['summary'])
             else:
-                st.markdown(f'<h4 style="color: orange;">Summary:</h4>', unsafe_allow_html=True)
+                            st.markdown(f'<h4 style="color: orange;">Summary:</h4>', unsafe_allow_html=True)
                 st.write(st.session_state['resume_data']['summary'])
 
     def strength_prompt(query_with_chunks):
@@ -172,10 +172,10 @@ class resume_analyzer:
         with st.form(key='Strength'):
             add_vertical_space(1)
             if 'resume_data' not in st.session_state:
-                pdf = st.file_uploader(label='Upload Your Resume', type='pdf')
-                add_vertical_space(2)
-                submit = st.form_submit_button(label='Submit')
-                add_vertical_space(1)
+            pdf = st.file_uploader(label='Upload Your Resume', type='pdf')
+            add_vertical_space(2)
+            submit = st.form_submit_button(label='Submit')
+            add_vertical_space(1)
             else:
                 st.info("Using previously uploaded resume")
                 submit = st.form_submit_button(label='Analyze Again')
@@ -184,7 +184,7 @@ class resume_analyzer:
         add_vertical_space(3)
         if submit:
             if 'resume_data' not in st.session_state:
-                if pdf is not None:
+            if pdf is not None:
                     if process_resume(pdf):
                         strength_prompt = resume_analyzer.strength_prompt(query_with_chunks=st.session_state['resume_data']['summary'])
                         strength = resume_analyzer.local_llm(chunks=st.session_state['resume_data']['chunks'], analyze=strength_prompt)
@@ -194,9 +194,9 @@ class resume_analyzer:
             else:
                 strength_prompt = resume_analyzer.strength_prompt(query_with_chunks=st.session_state['resume_data']['summary'])
                 strength = resume_analyzer.local_llm(chunks=st.session_state['resume_data']['chunks'], analyze=strength_prompt)
-                if strength:
-                    st.markdown(f'<h4 style="color: orange;">Strength:</h4>', unsafe_allow_html=True)
-                    st.write(strength)
+                            if strength:
+                                st.markdown(f'<h4 style="color: orange;">Strength:</h4>', unsafe_allow_html=True)
+                                st.write(strength)
 
     def weakness_prompt(query_with_chunks):
         query = f'''need to detailed analysis and explain of the weakness of below resume and how to improve make a better resume.
@@ -210,10 +210,10 @@ class resume_analyzer:
         with st.form(key='Weakness'):
             add_vertical_space(1)
             if 'resume_data' not in st.session_state:
-                pdf = st.file_uploader(label='Upload Your Resume', type='pdf')
-                add_vertical_space(2)
-                submit = st.form_submit_button(label='Submit')
-                add_vertical_space(1)
+            pdf = st.file_uploader(label='Upload Your Resume', type='pdf')
+            add_vertical_space(2)
+            submit = st.form_submit_button(label='Submit')
+            add_vertical_space(1)
             else:
                 st.info("Using previously uploaded resume")
                 submit = st.form_submit_button(label='Analyze Again')
@@ -222,7 +222,7 @@ class resume_analyzer:
         add_vertical_space(3)
         if submit:
             if 'resume_data' not in st.session_state:
-                if pdf is not None:
+            if pdf is not None:
                     if process_resume(pdf):
                         weakness_prompt = resume_analyzer.weakness_prompt(query_with_chunks=st.session_state['resume_data']['summary'])
                         weakness = resume_analyzer.local_llm(chunks=st.session_state['resume_data']['chunks'], analyze=weakness_prompt)
@@ -232,9 +232,9 @@ class resume_analyzer:
             else:
                 weakness_prompt = resume_analyzer.weakness_prompt(query_with_chunks=st.session_state['resume_data']['summary'])
                 weakness = resume_analyzer.local_llm(chunks=st.session_state['resume_data']['chunks'], analyze=weakness_prompt)
-                if weakness:
-                    st.markdown(f'<h4 style="color: orange;">Weakness and Suggestions:</h4>', unsafe_allow_html=True)
-                    st.write(weakness)
+                            if weakness:
+                                st.markdown(f'<h4 style="color: orange;">Weakness and Suggestions:</h4>', unsafe_allow_html=True)
+                                st.write(weakness)
 
     def job_title_prompt(query_with_chunks):
         query = f''' what are the job roles i apply to likedin based on below?
@@ -248,10 +248,10 @@ class resume_analyzer:
         with st.form(key='Job Titles'):
             add_vertical_space(1)
             if 'resume_data' not in st.session_state:
-                pdf = st.file_uploader(label='Upload Your Resume', type='pdf')
-                add_vertical_space(2)
-                submit = st.form_submit_button(label='Submit')
-                add_vertical_space(1)
+            pdf = st.file_uploader(label='Upload Your Resume', type='pdf')
+            add_vertical_space(2)
+            submit = st.form_submit_button(label='Submit')
+            add_vertical_space(1)
             else:
                 st.info("Using previously uploaded resume")
                 submit = st.form_submit_button(label='Analyze Again')
@@ -260,7 +260,7 @@ class resume_analyzer:
         add_vertical_space(3)
         if submit:
             if 'resume_data' not in st.session_state:
-                if pdf is not None:
+            if pdf is not None:
                     if process_resume(pdf):
                         job_title_prompt = resume_analyzer.job_title_prompt(query_with_chunks=st.session_state['resume_data']['summary'])
                         job_title = resume_analyzer.local_llm(chunks=st.session_state['resume_data']['chunks'], analyze=job_title_prompt)
@@ -270,20 +270,20 @@ class resume_analyzer:
             else:
                 job_title_prompt = resume_analyzer.job_title_prompt(query_with_chunks=st.session_state['resume_data']['summary'])
                 job_title = resume_analyzer.local_llm(chunks=st.session_state['resume_data']['chunks'], analyze=job_title_prompt)
-                if job_title:
-                    st.markdown(f'<h4 style="color: orange;">Job Titles:</h4>', unsafe_allow_html=True)
-                    st.write(job_title)
+                            if job_title:
+                                st.markdown(f'<h4 style="color: orange;">Job Titles:</h4>', unsafe_allow_html=True)
+                                st.write(job_title)
 
 class linkedin_scraper:
     @staticmethod
     def webdriver_setup():
         """Set up Chrome webdriver with enhanced anti-detection measures"""
         try:
-            options = webdriver.ChromeOptions()
+        options = webdriver.ChromeOptions()
             
             # Basic options
-            options.add_argument('--no-sandbox')
-            options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
             options.add_argument('--disable-gpu')
             options.add_argument('--disable-extensions')
             options.add_argument('--disable-notifications')
@@ -314,7 +314,7 @@ class linkedin_scraper:
             options.add_experimental_option('useAutomationExtension', False)
             
             # Create driver
-            driver = webdriver.Chrome(options=options)
+        driver = webdriver.Chrome(options=options)
             
             # Additional JavaScript to avoid detection
             driver.execute_cdp_cmd('Network.setUserAgentOverride', {"userAgent": user_agent})
@@ -332,8 +332,8 @@ class linkedin_scraper:
                 'deviceScaleFactor': 1,
             })
             
-            return driver
-            
+        return driver
+
         except Exception as e:
             st.error(f"Failed to initialize Chrome driver: {str(e)}")
             st.info("Please ensure Chrome browser is installed and updated to the latest version")
@@ -495,15 +495,15 @@ class linkedin_scraper:
                             if location:
                                 break
                         except:
-                            continue
-                    
+                continue
+
                     # Try to find URL
                     try:
                         url = card.find_element(by=By.CSS_SELECTOR, value="a").get_attribute("href")
-                    except:
-                        try:
+            except:
+            try:
                             url = card.find_element(by=By.CSS_SELECTOR, value="a.base-card__full-link").get_attribute("href")
-                        except:
+            except:
                             url = None
                     
                     if all([company, title, location, url]):
@@ -560,7 +560,7 @@ class linkedin_scraper:
         if st.button('Start Scraping'):
             with st.spinner('Scraping LinkedIn jobs...'):
                 try:
-                    driver = linkedin_scraper.webdriver_setup()
+                        driver = linkedin_scraper.webdriver_setup()
                     if driver is None:
                         return
                         
@@ -580,10 +580,10 @@ class linkedin_scraper:
                     else:
                         st.error('No jobs found matching your criteria. Try different search terms or location.')
                         
-                except Exception as e:
+        except Exception as e:
                     st.error(f'An error occurred while scraping: {str(e)}')
                     if 'driver' in locals():
-                        driver.quit()
+                driver.quit()
 
 class career_chatbot:
     def initialize_session_state():
