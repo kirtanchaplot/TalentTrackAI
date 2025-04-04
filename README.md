@@ -2,6 +2,17 @@
 
 # Talent Track AI
 
+## Website Preview  
+Here’s a preview of the website interface:  
+
+<p align="center">
+  <img src="uploads/pv1.png" alt="Summary" width="300">
+  <img src="uploads/pv2.png" alt="Strength" width="300">
+  <img src="uploads/pv3.png" alt="Weakness" width="300">
+  <img src="uploads/pv4.png" alt="Linkedin Jobs" width="300">
+   <img src="uploads/pv5.png" alt="Carrier Chat" width="300">
+</p>
+
 ## Overview
 "Talent Track AI" leverages the power of LLM as an advanced Streamlit application, specializing in thorough resume analysis. It excels at summarizing the resume, evaluating strengths, identifying weaknesses, and offering personalized improvement suggestions, while also recommending the perfect job titles. Additionally, it seamlessly employs Selenium to extract vital LinkedIn data, encompassing company names, job titles, locations, job URLs, and detailed job descriptions. In essence, Resume Analyzer AI simplifies the job-seeking journey by equipping users with comprehensive insights to elevate their career opportunities.
 
