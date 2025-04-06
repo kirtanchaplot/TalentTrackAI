@@ -6,11 +6,11 @@
 Here’s a preview of the website interface:  
 
 <p align="center">
-  <img src="uploads/pv1.png" alt="Summary" width="500">
-  <img src="uploads/pv2.png" alt="Strength" width="500">
-  <img src="uploads/pv3.png" alt="Weakness" width="500">
-  <img src="uploads/pv4.png" alt="Linkedin Jobs" width="500">
-   <img src="uploads/pv5.png" alt="Carrier Chat" width="500">
+  <img src="uploads/pv1.png" alt="Summary" width="600">
+  <img src="uploads/pv2.png" alt="Strength" width="600">
+  <img src="uploads/pv3.png" alt="Weakness" width="600">
+  <img src="uploads/pv4.png" alt="Linkedin Jobs" width="600">
+   <img src="uploads/pv5.png" alt="Carrier Chat" width="600">
 </p>
 
 ## Overview
